@@ -52,7 +52,6 @@ class Wikitel:
 
         paragraphSize = self.minitel.COL_SIZE - startPos[1]
         paragraphSize += (self.minitel.LINE_SIZE - (startPos[0] + 1) - footerSize) * self.minitel.COL_SIZE
-        print(paragraphSize)
 
         return paragraphSize
 
