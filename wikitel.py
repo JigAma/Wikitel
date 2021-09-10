@@ -14,7 +14,6 @@ class Wikitel:
         self.minitel.xdraw('ecrans/home.vdt')
         self.minitel.resetzones()
         self.minitel.zone(13, 15, 10, '', self.minitel.BLANC)
-        print(self.minitel.curpos())
 
     def __header(self, section_name):
         """
@@ -42,7 +41,6 @@ class Wikitel:
         """
         if line and col:
             self.minitel.pos(line, col)
-            print(self.minitel.curpos())
 
         self.minitel._print(text + " → ")
         self.minitel.inverse(True)
