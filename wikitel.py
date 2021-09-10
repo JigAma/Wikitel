@@ -83,7 +83,8 @@ class Wikitel:
         paragrapheLen = self.__paragraphSize(curPos, 2)
         self.__printParagraph(summary, curPos, paragrapheLen)
 
-        i = 1
+        i = 0
+        maxi = len(summary) // paragrapheLen
         while True:
             key = None
             key = self.minitel.getKey()
@@ -93,8 +94,25 @@ class Wikitel:
                 self.tableOfContent()
                 break
             elif key == self.minitel.SUITE:
-                self.__printParagraph(summary, curPos, paragrapheLen, i*paragrapheLen)
-                i += 1
+                if i < maxi:
+                    i += 1
+                    self.__printParagraph(summary, curPos, paragrapheLen, i*paragrapheLen)
+                else:
+                    self.minitel.message(0, 1, 1, "Fin de la page", True)
+            elif key == self.minitel.RETOUR:
+                if i > 0:
+                    i -= 1
+                    self.__printParagraph(summary, curPos, paragrapheLen, i * paragrapheLen)
+                else:
+                    self.minitel.message(0, 1, 1, "Début de la page", True)
+            elif key == self.minitel.REPETITION:
+                # self.__printParagraph(" "*paragrapheLen, curPos, paragrapheLen, i * paragrapheLen)
+                self.minitel._del(3, curPos[1])
+                self.minitel.canblock(4, 21, 1)
+                self.__printParagraph(summary, curPos, paragrapheLen, i * paragrapheLen)
+            else:
+                self.minitel.message(0, 1, 1, "Pas implémenté", True)
+
 
     def tableOfContent(self):
         self.__header("Sommaire\n")
