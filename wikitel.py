@@ -47,7 +47,27 @@ class Wikitel:
         self.minitel._print(button_name.upper())
         self.minitel.inverse(False)
 
-    def showPage(self, page=wikipedia.page(title="SNCF", auto_suggest=False, preload=True)):
+    def __paragraphSize(self, startPos, footerSize=0):
+        self.minitel.pos(startPos[0], startPos[1])
+
+        paragraphSize = self.minitel.COL_SIZE - startPos[1]
+        paragraphSize += (self.minitel.LINE_SIZE - (startPos[0] + 1) - footerSize) * self.minitel.COL_SIZE
+        print(paragraphSize)
+
+        return paragraphSize
+
+    def __printParagraph(self, text, startCurPos, paragraphSize, startIdx=0):
+
+        self.minitel.pos(startCurPos[0], startCurPos[1])
+        self.minitel._print(text[startIdx:startIdx + paragraphSize])
+        self.minitel.pos(startCurPos[0], startCurPos[1])  # reset curpos at original position
+
+    def showPage(self, page=wikipedia.page(title="Napoléon Ier", auto_suggest=False, preload=True)):
+        """
+        Display Wikipedia Page on self.minitel
+
+        :param wikipedia.WikipediaPage page: page to display
+        """
         self.currentPage = page
         self.summary()
 
