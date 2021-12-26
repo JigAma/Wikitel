@@ -79,8 +79,6 @@ class Wikitel:
     def summary(self):
         self.__header("Résumé")
         curPos = self.minitel.curpos()
-        self.minitel.pos(self.minitel.LINE_SIZE - 2)
-        self.minitel.plot("_", 40)
         self.__footer(("Défiler vers le bas", "Sommaire"), (self.minitel.SUITE, self.minitel.SOMMAIRE))
         self.minitel.pos(0, 1)
         self.minitel.flash(True)
