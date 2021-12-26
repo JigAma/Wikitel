@@ -82,7 +82,10 @@ class Wikitel:
         self.minitel.pos(self.minitel.LINE_SIZE - 2)
         self.minitel.plot("_", 40)
         self.__footer(("Défiler vers le bas", "Sommaire"), (self.minitel.SUITE, self.minitel.SOMMAIRE))
-
+        self.minitel.pos(0, 1)
+        self.minitel.flash(True)
+        self.minitel._print("Chargement...")
+        self.minitel.flash(False)
         summary = wikipedia.summary(self.currentPage.title)
         paragrapheLen = self.__paragraphSize(curPos, 2)
         self.__printParagraph(summary, curPos, paragrapheLen)
