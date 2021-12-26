@@ -47,9 +47,8 @@ class Wikitel:
 
         BUTTONS = ["ENVOI", "RETOUR", "REPETITION", "GUIDE", "ANNULATION", "SOMMAIRE", "CORRECTION", "SUITE", "CONNEXION FIN"]
         if len(buttonsText) != len(buttons):
-            raise ValueError("buttonsText et buttons doit être de la même taille")
-        nbOfButtons = len(buttons)
-        self.minitel.pos(self.minitel.LINE_SIZE-nbOfButtons)
+            raise ValueError("buttonsText et buttons doivent avoir la même taille")
+        self.minitel.pos(self.minitel.LINE_SIZE-len(buttons))
         self.minitel.plot("_", 40)
 
         for (buttonText, button) in zip(buttonsText, buttons):
