@@ -117,12 +117,34 @@ class Wikitel:
 
     def tableOfContent(self):
         self.__header("Sommaire\n")
-        for i, section in enumerate(self.currentPage.sections):
+        startCurPos = self.minitel.curpos()
+        paragraphLen = self.__paragraphSize(startCurPos, 0)
+        self.minitel.cursor(True)
+        totalPrinted = 0
+        for i, sectionTitle in enumerate(self.currentPage.sections):
+            toPrint = "{})".format(i + 1)
+            printedThisLoop = len(toPrint) + len(sectionTitle)
+            printedThisLoop += self.minitel.COL_SIZE - (len(toPrint) + len(sectionTitle) % self.minitel.COL_SIZE)  # \n
+            totalPrinted += printedThisLoop
+
+            if totalPrinted > paragraphLen:
+                self.minitel.canblock(self.minitel.curpos()[0], self.minitel.LINE_SIZE, 1)
+                self.minitel.pos(1, 1)
+                while True:
+                    key = self.minitel.getKey()
+                    if key == self.minitel.SUITE:
+                        totalPrinted = printedThisLoop
+                        self.minitel.pos(startCurPos[0], startCurPos[1])
+                        break
+
             self.minitel.inverse(True)
-            self.minitel._print("{})".format(i+1))
+            self.minitel._print(toPrint)
             self.minitel.inverse(False)
-            self.minitel._print(section + "\n")
-        
+
+            self.minitel._print(sectionTitle)
+            curPos = self.minitel.curpos()
+            self.minitel._del(curPos[0], curPos[1])
+            self.minitel._print("\n")
 
 
 
