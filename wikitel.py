@@ -12,6 +12,7 @@ class Wikitel:
         if self.minitel.conn.baudrate == 4800:
             print("/!\\ Appuyez sur Fct + P -> 4 ")
         self.minitel.home()
+        self.FOOTER_SIZE = 0
 
         self.currentPage = None
 
@@ -42,6 +43,8 @@ class Wikitel:
         :param tuple[str] buttonsText: texte associé au bouton
         :param tuple[int] buttons: constante du bouton déclaré dans Pynitel
         """
+        self.FOOTER_SIZE = len(buttons)
+
         BUTTONS = ["ENVOI", "RETOUR", "REPETITION", "GUIDE", "ANNULATION", "SOMMAIRE", "CORRECTION", "SUITE", "CONNEXION FIN"]
         if len(buttonsText) != len(buttons):
             raise ValueError("buttonsText et buttons doit être de la même taille")
