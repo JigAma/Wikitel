@@ -121,32 +121,39 @@ class Wikitel:
         paragrapheLen = self.__paragraphSize(curPos, 2)
         self.__printParagraph(summary, curPos, paragrapheLen)
 
-        i = 0
-        maxi = len(summary) // paragrapheLen
+        print("texte: " + str(len(summary)) + " caractères")     # TODO: DEBUG
+        self.minitel._del(0, 1)
+        paragrapheLen = self.__paragraphSize(curPos, 3)
+        pagesindex = self.__getPages(summary, paragrapheLen)
+        summary = summary.replace('\n', '\\') # TODO: DEBUG
+        i = -1
+        print(pagesindex)
+        key = self.minitel.SUITE
         while True:
-            key = self.minitel.getKey()
 
             if key == self.minitel.SOMMAIRE:
                 self.tableOfContent()
-                break
             elif key == self.minitel.SUITE:
-                if i < maxi:
+                if pagesindex[i+1] < len(summary):    # Check out of bounds
                     i += 1
-                    self.__printParagraph(summary, curPos, paragrapheLen, i*paragrapheLen)
+                    self.__printParagraph(summary, curPos, pagesindex[i+1], pagesindex[i])
+
                 else:
                     self.minitel.message(0, 1, 1, "Fin de la page", True)
             elif key == self.minitel.RETOUR:
                 if i > 0:     # Check out of bounds
                     i -= 1
-                    self.__printParagraph(summary, curPos, paragrapheLen, i * paragrapheLen)
+                    self.__printParagraph(summary, curPos, pagesindex[i+1], pagesindex[i])
                 else:
                     self.minitel.message(0, 1, 1, "Début de la page", True)
             elif key == self.minitel.REPETITION:
                 self.__header("Résumé")
-                self.__printParagraph(summary, curPos, paragrapheLen, i * paragrapheLen)
                 self.__footer(("Défiler vers le bas", "Sommaire"), (self.minitel.SUITE, self.minitel.SOMMAIRE))
+                self.__printParagraph(summary, curPos, pagesindex[i+1], pagesindex[i])
             else:
                 self.minitel.message(0, 1, 1, "Pas implémenté", True)
+
+            key = self.minitel.getKey()
 
     def tableOfContent(self):
         self.__header("Sommaire\n")
