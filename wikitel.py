@@ -60,10 +60,42 @@ class Wikitel:
 
         return paragraphSize
 
-    def __printParagraph(self, text, startCurPos, paragraphSize, startIdx=0):
+    def __getPages(self, text, maxPageSize=Pynitel.COL_SIZE*Pynitel.LINE_SIZE):
+        """
+        :param str text: text to split in pages
+        :param int maxPageSize: maximum number of characters in a page, default value is the maximum number of characters displayable on the Minitel screen
+        :return: a list of index of all pages
+        """
+        #maxPageSize-=1
+        nb_of_pages = len(text) // maxPageSize
+        pages = [0] * nb_of_pages
+
+        i = 0
+        for char_i, char in enumerate(text):
+            if char_i >= pages[i]:
+                i += 1
+
+                if i >= len(pages):
+                    pages.append(pages[-1] + maxPageSize)
+                pages[i] = pages[i - 1] + maxPageSize
+
+            if char == '\n':
+                char_pos = char_i % Pynitel.COL_SIZE
+                pages[i] -= (Pynitel.COL_SIZE - char_pos)
+
+        # DEBUG TEST
+        for i in range(1, len(pages)):
+            if pages[i] - pages[i-1] > maxPageSize:
+                print("ERREUR: pages[{}] > {} ({})".format(i, maxPageSize, pages[i] - pages[i-1]))
+        return pages
+
+    def __printParagraph(self, text, startCurPos, endIdx, startIdx=0):
 
         self.minitel.pos(startCurPos[0], startCurPos[1])
-        self.minitel._print(text[startIdx:startIdx + paragraphSize])
+
+        self.minitel._print(text[startIdx:endIdx])
+        end_pos = self.minitel.curpos()
+        self.minitel.canblock(end_pos[0], self.minitel.LINE_SIZE-self.FOOTER_SIZE, end_pos[1])
         self.minitel.pos(startCurPos[0], startCurPos[1])  # reset curpos at original position
 
     def showPage(self, page=wikipedia.page(title="Napoléon Ier", auto_suggest=False, preload=True)):
