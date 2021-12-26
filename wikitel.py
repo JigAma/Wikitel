@@ -54,10 +54,9 @@ class Wikitel:
             self.minitel.inverse(False)
 
     def __paragraphSize(self, startPos, footerSize=0):
-        self.minitel.pos(startPos[0], startPos[1])
-
-        paragraphSize = self.minitel.COL_SIZE - startPos[1]
-        paragraphSize += (self.minitel.LINE_SIZE - (startPos[0] + 1) - footerSize) * self.minitel.COL_SIZE
+        self.minitel.cursor(True)
+        paragraphSize = self.minitel.COL_SIZE - startPos[1] + 1
+        paragraphSize += (self.minitel.LINE_SIZE - (startPos[0]) - footerSize) * self.minitel.COL_SIZE
 
         return paragraphSize
 
