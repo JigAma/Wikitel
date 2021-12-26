@@ -3,6 +3,8 @@ import wikipedia
 import serial
 
 wikipedia.set_lang("fr")
+
+
 class Wikitel:
     
     def __init__(self, pynitel=Pynitel(serial.Serial('/dev/ttyUSB0', 4800, parity=serial.PARITY_EVEN, bytesize=7, timeout=2))):
@@ -134,7 +136,7 @@ class Wikitel:
                 else:
                     self.minitel.message(0, 1, 1, "Fin de la page", True)
             elif key == self.minitel.RETOUR:
-                if i > 0:
+                if i > 0:     # Check out of bounds
                     i -= 1
                     self.__printParagraph(summary, curPos, paragrapheLen, i * paragrapheLen)
                 else:
@@ -178,14 +180,7 @@ class Wikitel:
             self.minitel._print("\n")
 
 
-
-# minitel.waitzones(0)
-# result = self.minitel.zones[0]['texte']
-# print(result)
-
-
 if __name__ == "__main__":
 
     w = Wikitel()
     w.showPage()
-
