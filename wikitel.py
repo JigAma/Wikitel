@@ -5,8 +5,10 @@ import serial
 wikipedia.set_lang("fr")
 class Wikitel:
     
-    def __init__(self, pynitel=Pynitel(serial.Serial('/dev/ttyUSB0', 1200, parity=serial.PARITY_EVEN, bytesize=7, timeout=2))):
+    def __init__(self, pynitel=Pynitel(serial.Serial('/dev/ttyUSB0', 4800, parity=serial.PARITY_EVEN, bytesize=7, timeout=2))):
         self.minitel = pynitel
+        if self.minitel.conn.baudrate == 4800:
+            print("/!\\ Appuyez sur Fct + P -> 4 ")
         self.minitel.home()
 
         self.currentPage = None
