@@ -5,8 +5,10 @@ from abc import ABC, abstractmethod
 
 
 class ViewController(ABC):
+    _minitel = None
 
     def __init__(self, baudrate, port):
+
         if not ViewController._minitel:
             ViewController._minitel = Pynitel(serial.Serial(port, baudrate, parity=serial.PARITY_EVEN, bytesize=7, timeout=2))
 
