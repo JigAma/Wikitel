@@ -1,24 +1,36 @@
 from pynitel.pynitel import Pynitel
 import wikipedia
-import serial
+from views.HomeViewController import *
+import platform
+
+import test_variable
+from views.PageViewController import PageViewController
 
 wikipedia.set_lang("fr")
 
-
 class Wikitel:
     
-    def __init__(self, pynitel=Pynitel(serial.Serial('/dev/ttyUSB0', 4800, parity=serial.PARITY_EVEN, bytesize=7, timeout=2))):
-        self.minitel = pynitel
-        if self.minitel.conn.baudrate == 4800:
-            print("/!\\ Appuyez sur Fct + P -> 4 ")
-        self.minitel.home()
+    def __init__(self):
+        
+        self.PORT = "COM3"
+        if platform.system() == "Linux":
+            self.PORT = '/dev/ttyUSB0'
+
+        self.BAUDRATE = 4800
+        self.current_viewcontroller = HomeViewController(self.BAUDRATE, self.PORT)
+        if self.BAUDRATE == 4800:
+            print("/!\\ Appuyez sur Fct + P -> " + str(self.BAUDRATE//1000))
+
         self.FOOTER_SIZE = 0
+        self.current_viewcontroller.draw()
+        search_input = self.current_viewcontroller.get_searchtext_input()
 
-        self.currentPage = None
+        if isinstance(search_input, int):
+            # Gérer touches Télétel (Guide, Sommaire, Suite)
+            pass
+        else:
+            self.showPage()
 
-        self.minitel.xdraw('ecrans/home.vdt')
-        self.minitel.resetzones()
-        self.minitel.zone(13, 15, 10, '', self.minitel.BLANC)
 
     def __header(self, section_name):
         """
