@@ -121,7 +121,17 @@ class Wikitel:
         :param wikipedia.WikipediaPage page: page to display
         """
         self.currentPage = page
-        self.summary()
+        self.current_viewcontroller = PageViewController(self.BAUDRATE, self.PORT)
+
+        self.current_viewcontroller.set_page_title(page.title)
+        self.current_viewcontroller.set_page_section_name("Résumé")
+
+        page_buttons = (Teletel.SUITE, Teletel.SOMMAIRE)
+        buttons_text = ("Défiler vers le bas", "Sommaire")
+        self.current_viewcontroller.set_page_buttons(page_buttons, buttons_text)
+        self.current_viewcontroller.draw()
+
+        self.current_viewcontroller.print_content() #TODO
 
     def summary(self):
         self.__header("Résumé")
