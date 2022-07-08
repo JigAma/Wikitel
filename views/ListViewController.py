@@ -27,22 +27,23 @@ class ListViewController(ViewController):
 
         :param list[str] list_to_print: List of element to print
         """
-
+        self.displayed_list = list_to_print
         for i, elem in enumerate(list_to_print):
-            elem_index = "{})".format(i + 1)
-            # printedThisLoop = len(toPrint) + len(sectionTitle)
-
-            self._minitel.inverse(True)
-            self._minitel._print(elem_index)
-            self._minitel.inverse(False)
-
-            self._minitel._print(elem)
-            curPos = self._minitel.curpos()
-            self._minitel._del(*curPos)
-            self._minitel._print("\n")
+            self._print_line(i+1, elem)
 
         self._minitel.flash()
-        self.handle_input()
+
+    def _print_line(self, index, text, reverse=False):
+        elem_index = "{})".format(index)
+
+        self._minitel.inverse(not reverse)
+        self._minitel._print(elem_index)
+        self._minitel.inverse(reverse)
+
+        self._minitel._print(text)
+        curPos = self._minitel.curpos()
+        self._minitel._del(*curPos)
+        self._minitel._print("\n")
 
     def handle_input(self):
         current_input = self._minitel.get()
