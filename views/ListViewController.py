@@ -46,13 +46,33 @@ class ListViewController(ViewController):
         self._minitel._print("\n")
 
     def handle_input(self):
-        current_input = self._minitel.get()
-        selection = 0
-        while current_input != Teletel.ENVOI.value:
-            current_input = self._minitel.input(20, 38, 2)
-            print(current_input)
+
+        while True:
+            data = self._minitel._if()
+            self._minitel.step(5)
+            if data:
+                i = 0
+                try:
+                    i = int(data)
+                    if 0 > i-1 or i-1 > len(self.displayed_list):
+                        raise IndexError
+                except ValueError:
+                    self._minitel.message(0, 1, 1, "ERREUR: Utilisez le pavé numérique", True)
+                except IndexError:
+                    self._minitel.message(0, 1, 1, "ERREUR: Index invalide.", True)
+                    i = 0
+                # self._print_line(i, selected_elem, True)
+                selected_elem = self.displayed_list[i - 1]
+
+                self._minitel.pos(self.top_of_page[0] + i - 1)
+                self._print_line(i, selected_elem, True)
+
+
+        # current_input = self._minitel.get()
+        # selection = 0
+        # while current_input != Teletel.ENVOI.value:
+        #     current_input = self._minitel.input(20, 38, 2)
+        #     print(current_input)
 
     def _draw_footer(self):
         pass
-
-
