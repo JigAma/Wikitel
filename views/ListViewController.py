@@ -32,7 +32,8 @@ class ListViewController(ViewController):
         for i, elem in enumerate(list_to_print):
             self._print_line(i+1, elem)
 
-        self._minitel.flash()
+        self._minitel.pos(self._minitel.LINE_SIZE,
+                          self._minitel.COL_SIZE - 1)  # pos cursor at bottom right because of local echo
 
     def _print_line(self, index, text, reverse=False):
         elem_index = "{})".format(index)
@@ -73,13 +74,15 @@ class ListViewController(ViewController):
                         raise IndexError
 
                     # Redraw previously selected element
-                    self._minitel.pos(self.top_of_page[0] + previous_i - 1)
+                    padding = sum([self.calculate_nb_of_lines(self.displayed_list[previouss_i - 1]) for previouss_i in range(previous_i)])
+                    self._minitel.pos(self.top_of_page[0] + previous_i - 1 + padding)
                     self._print_line(previous_i, selected_elem, False)
 
                     selected_elem = self.displayed_list[i - 1]
 
                     # Draw current selected element with emphasis
-                    self._minitel.pos(self.top_of_page[0] + i - 1)
+                    padding = sum([self.calculate_nb_of_lines(self.displayed_list[previouss_i - 1]) for previouss_i in range(i)])
+                    self._minitel.pos(self.top_of_page[0] + i - 1 + padding)
                     self._print_line(i, selected_elem, True)
 
                     self._minitel.pos(self._minitel.LINE_SIZE, self._minitel.COL_SIZE-1)    # pos cursor at bottom right because of local echo

@@ -14,3 +14,17 @@ class ViewController(ABC):
 
     def draw(self):
         self._minitel.home()
+
+    @staticmethod
+    def calculate_nb_of_lines(text):
+        """
+        Calculate the number of lines taken by a text on the minitel screen
+
+        :param str text:
+        :return: The number of lines on which text will be printed
+        :rtype: int
+        """
+
+        nb_of_lines = len(text)//Pynitel.COL_SIZE
+        nb_of_lines += text.count('\n')
+        return nb_of_lines
