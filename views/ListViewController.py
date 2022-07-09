@@ -1,3 +1,4 @@
+
 from Teletel import Teletel
 from views.ViewController import *
 
@@ -7,8 +8,8 @@ class ListViewController(ViewController):
     def __init__(self, baudrate, port):
         super().__init__(baudrate, port)
 
-        self.top_of_page = ()   # x,y position of top of page
-        self.displayed_list = []   # current displayed list
+        self.top_of_page = ()  # x,y position of top of page
+        self.displayed_list = []  # current displayed list
 
     def draw(self):
         super().draw()
@@ -46,33 +47,49 @@ class ListViewController(ViewController):
         self._minitel._print("\n")
 
     def handle_input(self):
+        """
+        Handle the selection of an item on the list by the user
 
+        :return: the selected item
+        :rtype: str
+        """
+        ENVOI_BYTE = b'\x13'
+        selected_elem = self.displayed_list[0]
+        i = 1
+        do_error_happened = False
         while True:
             data = self._minitel._if()
-            self._minitel.step(5)
+
             if data:
-                i = 0
                 try:
+                    if data == ENVOI_BYTE:
+                        return self.displayed_list[i - 1]
+
+                    if not do_error_happened:
+                        previous_i = i
+                    do_error_happened = False
                     i = int(data)
-                    if 0 > i-1 or i-1 > len(self.displayed_list):
+                    if 0 > i-1 or i-1 > len(self.displayed_list):   # Check out of bounds
                         raise IndexError
+
+                    # Redraw previously selected element
+                    self._minitel.pos(self.top_of_page[0] + previous_i - 1)
+                    self._print_line(previous_i, selected_elem, False)
+
+                    selected_elem = self.displayed_list[i - 1]
+
+                    # Draw current selected element with emphasis
+                    self._minitel.pos(self.top_of_page[0] + i - 1)
+                    self._print_line(i, selected_elem, True)
+
+                    self._minitel.pos(self._minitel.LINE_SIZE, self._minitel.COL_SIZE-1)    # pos cursor at bottom right because of local echo
+
                 except ValueError:
                     self._minitel.message(0, 1, 1, "ERREUR: Utilisez le pavé numérique", True)
+                    do_error_happened = True
                 except IndexError:
                     self._minitel.message(0, 1, 1, "ERREUR: Index invalide.", True)
-                    i = 0
-                # self._print_line(i, selected_elem, True)
-                selected_elem = self.displayed_list[i - 1]
-
-                self._minitel.pos(self.top_of_page[0] + i - 1)
-                self._print_line(i, selected_elem, True)
-
-
-        # current_input = self._minitel.get()
-        # selection = 0
-        # while current_input != Teletel.ENVOI.value:
-        #     current_input = self._minitel.input(20, 38, 2)
-        #     print(current_input)
+                    do_error_happened = True
 
     def _draw_footer(self):
         pass
