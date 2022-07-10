@@ -54,45 +54,43 @@ class ListViewController(ViewController):
         :return: the selected item
         :rtype: str
         """
-        ENVOI_BYTE = b'\x13'
         selected_elem = self.displayed_list[0]
         i = 1
         do_error_happened = False
         while True:
-            data = self._minitel._if()
+            data = self._minitel.input(self._minitel.LINE_SIZE, self._minitel.COL_SIZE-2, 2)
 
-            if data:
-                try:
-                    if data == ENVOI_BYTE:
-                        return self.displayed_list[i - 1]
+            try:
+                if data[0] == '' and data[1] == Teletel.ENVOI.value:
+                    return selected_elem
 
-                    if not do_error_happened:
-                        previous_i = i
-                    do_error_happened = False
-                    i = int(data)
-                    if 0 > i-1 or i-1 > len(self.displayed_list):   # Check out of bounds
-                        raise IndexError
+                if not do_error_happened:
+                    previous_i = i
+                do_error_happened = False
+                i = int(data[0])
+                if 0 > i-1 or i-1 > len(self.displayed_list):   # Check out of bounds
+                    raise IndexError
 
-                    # Redraw previously selected element
-                    padding = sum([self.calculate_nb_of_lines(self.displayed_list[previouss_i - 1]) for previouss_i in range(previous_i)])
-                    self._minitel.pos(self.top_of_page[0] + previous_i - 1 + padding)
-                    self._print_line(previous_i, selected_elem, False)
+                # Redraw previously selected element
+                padding = sum([self.calculate_nb_of_lines(self.displayed_list[previouss_i - 1]) for previouss_i in range(previous_i)])
+                self._minitel.pos(self.top_of_page[0] + previous_i - 1 + padding)
+                self._print_line(previous_i, selected_elem, False)
 
-                    selected_elem = self.displayed_list[i - 1]
+                selected_elem = self.displayed_list[i - 1]
 
-                    # Draw current selected element with emphasis
-                    padding = sum([self.calculate_nb_of_lines(self.displayed_list[previouss_i - 1]) for previouss_i in range(i)])
-                    self._minitel.pos(self.top_of_page[0] + i - 1 + padding)
-                    self._print_line(i, selected_elem, True)
+                # Draw current selected element with emphasis
+                padding = sum([self.calculate_nb_of_lines(self.displayed_list[previouss_i - 1]) for previouss_i in range(i)])
+                self._minitel.pos(self.top_of_page[0] + i - 1 + padding)
+                self._print_line(i, selected_elem, True)
 
-                    self._minitel.pos(self._minitel.LINE_SIZE, self._minitel.COL_SIZE-1)    # pos cursor at bottom right because of local echo
+                self._minitel.pos(self._minitel.LINE_SIZE, self._minitel.COL_SIZE-1)    # pos cursor at bottom right because of local echo
 
-                except ValueError:
-                    self._minitel.message(0, 1, 1, "ERREUR: Utilisez le pavé numérique", True)
-                    do_error_happened = True
-                except IndexError:
-                    self._minitel.message(0, 1, 1, "ERREUR: Index invalide.", True)
-                    do_error_happened = True
+            except ValueError:
+                self._minitel.message(0, 1, 1, "ERREUR: Utilisez le pavé numérique", True)
+                do_error_happened = True
+            except IndexError:
+                self._minitel.message(0, 1, 1, "ERREUR: Index invalide.", True)
+                do_error_happened = True
 
     def _draw_footer(self):
         pass
