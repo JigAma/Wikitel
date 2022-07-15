@@ -25,6 +25,18 @@ class ViewController(ABC):
         :rtype: int
         """
 
-        nb_of_lines = len(text)//Pynitel.COL_SIZE
-        nb_of_lines += text.count('\n')
+        nb_of_lines = 1
+        col_counter = 0
+        for char in text:
+            line_to_add = 0
+            if char == "\n":
+                line_to_add += 1
+            if col_counter >= ViewController._minitel.COL_SIZE:
+                line_to_add += 1
+
+            if line_to_add:
+                nb_of_lines += line_to_add
+                col_counter = 0
+            else:
+                col_counter += 1
         return nb_of_lines
